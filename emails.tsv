@@ -1,3 +1,4 @@
 id	email	subject	body	status
-1	learningmyhabit@gmail.com	Welcome	Hi Alice, welcome!	pending
-2	second@example.com	Hello	Hi Bob	this is a test	pending
+1	learningmyhabit@gmail.com	Welcome	Hi Alice, welcome!	sent
+2	farzad0514@gmail.com	Hello	Hi Bob	this is a test
+3	muhammad.farzad.ali@gmail.com	Hello	Hi Ali	this is a test
