@@ -8,7 +8,7 @@ from rich.prompt import Confirm, Prompt
 from src.cli import parse_args
 from src.config import load_config, validate_email_config, validate_discord_config
 from src.discord_webhook import send_stats_to_discord
-from src.email_sender import send_email, test_connection
+from src.email_sender import send_email, check_connection
 from src.progress import EmailProgress
 from src.tsv_manager import (
     get_pending_emails,
@@ -85,7 +85,7 @@ def main() -> None:
 
         if args.get("test_connection"):
             console.print("\n[bold]Testing SMTP connection...[/bold]")
-            ok, msg = test_connection(config)
+            ok, msg = check_connection(config)
             if ok:
                 console.print(f"[green]{msg}[/green]")
             else:

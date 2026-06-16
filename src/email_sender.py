@@ -48,7 +48,7 @@ def send_email(
         return False, f"Network error: {e}"
 
 
-def test_connection(config: Config) -> tuple[bool, str]:
+def check_connection(config: Config) -> tuple[bool, str]:
     try:
         if config.smtp_port == 465:
             context = ssl.create_default_context()
