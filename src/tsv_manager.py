@@ -25,15 +25,15 @@ def load_tsv(file_path: str | Path) -> list[dict[str, str]]:
             raise ValueError(f"TSV missing columns: {', '.join(sorted(missing))}")
 
         for i, row in enumerate(rows := list(reader), start=2):
-            row["id"] = row.get("id", "").strip()
-            row["email"] = row.get("email", "").strip()
-            row["subject"] = row.get("subject", "").strip()
-            row["body"] = row.get("body", "").strip()
-            row["status"] = row.get("status", "pending").strip().lower()
-            if not row["id"]:
+            cleaned: dict[str, str] = {}
+            for key in EXPECTED_COLUMNS:
+                cleaned[key] = row.get(key, "").strip()
+            cleaned["status"] = cleaned["status"].lower() or "pending"
+            if not cleaned["id"]:
                 raise ValueError(f"Row {i}: 'id' is empty")
-            if not row["email"] or "@" not in row["email"]:
-                raise ValueError(f"Row {i}: invalid email '{row['email']}'")
+            if not cleaned["email"] or "@" not in cleaned["email"]:
+                raise ValueError(f"Row {i}: invalid email '{cleaned['email']}'")
+            rows[i - 2] = cleaned
 
     return rows
 
@@ -41,7 +41,9 @@ def load_tsv(file_path: str | Path) -> list[dict[str, str]]:
 def save_tsv(file_path: str | Path, data: list[dict[str, str]]) -> None:
     path = Path(file_path)
     with open(path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=EXPECTED_COLUMNS, delimiter="\t")
+        writer = csv.DictWriter(
+            f, fieldnames=EXPECTED_COLUMNS, delimiter="\t", extrasaction="ignore"
+        )
         writer.writeheader()
         writer.writerows(data)
 
