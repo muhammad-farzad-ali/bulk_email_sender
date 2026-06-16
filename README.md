@@ -6,11 +6,13 @@ A Python CLI tool for sending bulk emails from a TSV file with progress tracking
 
 - **Interactive & CLI modes** - Use prompts or command-line arguments
 - **TSV-based input** - Simple tab-separated file with id, email, subject, body, status
+- **HTML body support** - HTML in the body column is automatically converted to plain text
 - **Status tracking** - Automatically updates status to `sent` or `error`
 - **Progress display** - Rich terminal UI with progress bar and summary table
 - **Discord notifications** - Send completion stats to a Discord webhook
 - **Batch processing** - Send in batches, continue or close after each
 - **Rate limiting** - Configurable delay between emails
+- **Cron scheduling** - Pre-configured shell script for daily automated runs
 - **Cross-platform** - Works on Windows and Linux
 
 ## Setup
@@ -113,19 +115,85 @@ python -m src -f emails.tsv -a continue --no-interactive
 python -m pytest tests/ -v
 ```
 
+## Scheduling (Ubuntu / Cron)
+
+The project includes a `run.sh` script for automated daily runs.
+
+### Setup
+
+1. Copy the project to your Ubuntu server
+2. Create and activate a virtual environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+3. Make the script executable:
+
+```bash
+chmod +x run.sh
+```
+
+4. Configure `.env` with your SMTP credentials
+
+5. Add to crontab:
+
+```bash
+crontab -e
+```
+
+Add this line (Monday–Friday at 7:00 AM):
+
+```
+0 7 * * 1-5 /path/to/bulk_email_sender/run.sh
+```
+
+### What `run.sh` does
+
+- Activates the virtual environment
+- Sends up to 20 emails per run with a 2-second delay between each
+- Logs output to `cron.log` in the project directory
+- Auto-closes after each batch
+
+### Customizing the schedule
+
+Edit `run.sh` to change defaults:
+
+| Variable    | Default | Description                  |
+|-------------|---------|------------------------------|
+| `--count`   | 20      | Emails per run               |
+| `--delay`   | 2       | Seconds between emails       |
+| `--no-discord` | set  | Remove to enable Discord     |
+
+Example crontab entries:
+
+```
+# Every weekday at 7 AM
+0 7 * * 1-5 /path/to/run.sh
+
+# Every day at 9 AM and 3 PM
+0 9,15 * * * /path/to/run.sh
+
+# Weekdays at 8 AM, send 50 emails
+0 8 * * 1-5 /path/to/run.sh  # then edit --count in run.sh
+```
+
 ## Project Structure
 
 ```
 bulk_email_sender/
 ├── .env.example          # Template for credentials
 ├── requirements.txt      # Dependencies
+├── run.sh               # Cron scheduling script (Linux)
 ├── src/
 │   ├── __main__.py      # Entry point
 │   ├── app.py           # Main orchestrator
 │   ├── cli.py           # Argument parsing & interactive prompts
 │   ├── config.py        # .env loading & validation
 │   ├── discord_webhook.py  # Discord notifications
-│   ├── email_sender.py  # SMTP sending logic
+│   ├── email_sender.py  # SMTP sending logic + HTML-to-text
 │   ├── progress.py      # Rich terminal UI
 │   └── tsv_manager.py   # TSV file operations
 └── tests/               # Unit tests
