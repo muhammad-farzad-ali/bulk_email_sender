@@ -7,7 +7,7 @@ cd "$SCRIPT_DIR"
 source .venv/bin/activate
 
 python -m src \
-    --file "$SCRIPT_DIR/emails.tsv" \
+    --file "$SCRIPT_DIR/clubs.tsv" \
     --count 20 \
     --delay 2 \
     --no-discord \
