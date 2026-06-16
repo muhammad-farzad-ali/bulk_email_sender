@@ -10,7 +10,6 @@ python -m src \
     --file "$SCRIPT_DIR/clubs.tsv" \
     --count 20 \
     --delay 2 \
-    --no-discord \
     -a close \
     --no-interactive \
     --env-file "$SCRIPT_DIR/.env" \
