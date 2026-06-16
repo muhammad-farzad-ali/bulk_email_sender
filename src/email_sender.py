@@ -40,8 +40,6 @@ def send_email(
         return False, "SMTP authentication failed - check username/password"
     except smtplib.SMTPRecipientsRefused:
         return False, f"Recipient refused: {to_email}"
-    except smtplib.SMTPException as e:
-        return False, f"SMTP error: {e}"
     except ConnectionRefusedError:
         return False, f"Connection refused by {config.smtp_host}:{config.smtp_port}"
     except TimeoutError:
@@ -76,5 +74,3 @@ def test_connection(config: Config) -> tuple[bool, str]:
         return False, f"Connection to {config.smtp_host}:{config.smtp_port} timed out"
     except OSError as e:
         return False, f"Network error: {e}"
-    except smtplib.SMTPException as e:
-        return False, f"SMTP error: {e}"
